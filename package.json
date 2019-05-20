@@ -10,7 +10,9 @@
     "pug": "^2.0.3",
     "scribbletune": "^2.0.2"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "eslint": "^5.16.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

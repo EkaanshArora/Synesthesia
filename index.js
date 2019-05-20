@@ -7,7 +7,7 @@ var storage = multer.diskStorage({
     cb(null, "uploads");
   },
   filename: function(req, file, cb) {
-    cb(null, ""+Date.now());
+    cb(null, "" + Date.now());
   }
 });
 
@@ -22,17 +22,17 @@ let pattern = "",
   blueSum = 0,
   colorSum = 0,
   imageBrightness = 0,
-  maxColor = 0,
   redPercent = 0,
   greenPercent = 0,
   bluePercent = 0,
   chordSelector = 0,
   chosenChord,
   chosenScale,
-  progressionNotes = ["i", "ii", "iii", "VI", "v", "VII", "III", "i"],
+  progressionNotesMaster = ["i", "ii", "iii", "VI", "v", "VII", "III", "i"],
+  progressionNotes,
   calculatedProgression = "",
-  songRender = "";
-  quotedMidi = ""
+  songRender = "",
+  uploadedImage;
 
 var app = express();
 app.set("views", "./views");
@@ -45,20 +45,13 @@ app.get("/", function(req, res) {
 });
 
 app.post("/", upload.single("image"), function(req, res) {
-  console.log(req);
   uploadedImage = req.file.path;
-  makeMidi(uploadedImage);
-  quotedMidi = `'`+songRender+`'`;
-  res.render("play", { mario: quotedMidi });
-});
-
-function makeMidi(imageName) {
-  Jimp.read(imageName).then(image => {
+  Jimp.read(uploadedImage).then(image => {
     image
       .resize(resizeFactor, resizeFactor) // resize
       .quality(80) // set JPEG quality
-      .write("comp.jpg", (err, image) => {
-        Jimp.read("comp.jpg")
+      .write(uploadedImage+"t", (err, image) => {
+        Jimp.read(uploadedImage+"t")
           .then(image => {
             image.scan(0, 0, image.bitmap.width, image.bitmap.height, function(
               x,
@@ -111,6 +104,7 @@ function makeMidi(imageName) {
               chosenScale = 6;
             }
             console.log(chosenChord + chosenScale);
+            progressionNotes = Array.from(progressionNotesMaster);
             for (var i = progressionNotes.length - 1; i >= 0; i--) {
               calculatedProgression =
                 calculatedProgression +
@@ -146,13 +140,19 @@ function makeMidi(imageName) {
               pattern: pattern
             });
             scribble.midi(clip1, "clip.mid", function() {
-              console.log(
-                "data:audio/midi;base64," +
-                  Buffer(fs.readFileSync("clip.mid")).toString("base64")
-              );
               songRender =
                 "data:audio/midi;base64," +
                 Buffer(fs.readFileSync("clip.mid")).toString("base64");
+              res.render("play", { mario: songRender });
+              calculatedProgression = "";
+              fs.unlink(uploadedImage, (err) => {
+                if (err) throw err;
+                console.log('1 was deleted');
+              });
+              fs.unlink(uploadedImage+"t", (err) => {
+                if (err) throw err;
+                console.log('2 was deleted');
+              });
             });
           })
           .catch(err => {
@@ -160,7 +160,7 @@ function makeMidi(imageName) {
           });
       });
   });
-}
+});
 
 app.listen(3000, function() {
   console.log("Listening at 3000");
