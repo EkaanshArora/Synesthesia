@@ -38,7 +38,7 @@ var buildTracksHtml = function () {
 
 Soundfont.instrument(ac, 'https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/gh-pages/MusyngKite/acoustic_guitar_nylon-mp3.js').then(function (instrument) {
 	document.getElementById('loading').style.display = 'none';
-	document.getElementById('select-file').style.display = 'block';
+	//document.getElementById('select-file').style.display = 'block';
 
 	loadFile = function () {
 		var file = document.querySelector('input[type=file]').files[0];
@@ -77,7 +77,7 @@ Soundfont.instrument(ac, 'https://raw.githubusercontent.com/gleitz/midi-js-sound
 			}
 
 			document.getElementById('tempo-display').innerHTML = Player.tempo;
-			document.getElementById('file-format-display').innerHTML = Player.format;
+			//document.getElementById('file-format-display').innerHTML = Player.format;
 			document.getElementById('play-bar').style.width = 100 - Player.getSongPercentRemaining() + '%';
 		});
 
@@ -92,4 +92,3 @@ Soundfont.instrument(ac, 'https://raw.githubusercontent.com/gleitz/midi-js-sound
 	loadDataUri(mario);
 });
 
-var mario = 'data:audio/midi;base64,TVRoZAAAAAYAAAABAIBNVHJrAAAAsACQMH+BAIAwWgCQM39AgDNaAJA3f0CAN1oAkDp/gQCAOloAkD5/gQCAPloAkDN/gQCAM1oAkDd/QIA3WgCQOn9AgDpaAJA3f4EAgDdaAJA6f4EAgDpaAJAyf4EAgDJaAJA1f0CANVoAkDl/QIA5WgCQM3+BAIAzWgCQNn+BAIA2WgCQMH+BAIAwWgCQM39AgDNaAJA3f0CAN1oAkDh/gQCAOFoAkDx/gQCAPFoA/y8A';

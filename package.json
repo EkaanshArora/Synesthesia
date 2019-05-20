@@ -4,7 +4,10 @@
   "description": "-",
   "main": "index.js",
   "dependencies": {
+    "express": "^4.17.0",
     "jimp": "^0.6.4",
+    "multer": "^1.4.1",
+    "pug": "^2.0.3",
     "scribbletune": "^2.0.2"
   },
   "devDependencies": {},

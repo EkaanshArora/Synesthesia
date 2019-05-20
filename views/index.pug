@@ -1,0 +1,14 @@
+html
+    head
+        link(rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css")
+        link(rel="stylesheet" href="./css/style.css" type="text/css")
+    body
+        h1.center Synesthesia
+        h5.center= error
+        form.mauto.col-8(action="/" enctype="multipart/form-data" method="POST")
+            .form-group
+                label(for='image') Pick an image
+                input.form-control-file#fileinput(type="file" name="image" placeholder="Pick" required)
+                p#fileval.formtextred Please select a file
+            button.btn.btn-primary#subbut(type='submit' title="Submit") Submit
+        script(src="./js/script.js")

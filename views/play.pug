@@ -1,0 +1,46 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='utf-8')
+    title Synesthesia
+    meta(name='viewport', content='width=device-width, initial-scale=1')
+    link(rel='stylesheet', href='css/normalize.css')
+    link(rel='stylesheet', href='css/skeleton.css')
+    link(href='https://fonts.googleapis.com/css?family=Bree+Serif', rel='stylesheet')
+    link(rel='stylesheet', href='css/style.css')
+  body
+    .container(style='padding-top:12px;')
+      .row
+        .twelve.columns
+          h1 Synesthesia
+          p
+            | This MIDI player was built using 
+            a(href='https://github.com/grimmdude/MidiPlayerJS') MidiPlayerJS
+            |  to read the file, and 
+            a(href='https://github.com/danigb/soundfont-player') soundfont-player
+            |  to load and play the sounds. Based on 
+            a(href='http://grimmdude.com/MidiPlayerJS/') MidiPlayerJS
+            |  website.
+          p
+          p#loading Loading soundfont...
+          div(style='border:1px solid #ccc;margin-bottom:12px;background:#f7f7f7;')
+            #play-bar(style='height:40px;background:#33C3F0;width:0%;')
+          p
+            button#play-button.button.button-primary(onclick='Player.isPlaying() ? pause() : play();', disabled='disabled') Play
+            button.button(onclick='stop()') Stop
+          hr
+          p
+            | Tempo: 
+            span#tempo-display
+            |  bpm
+            br
+            input(type='range', onchange='Player.pause();Player.setTempo(this.value);Player.play()', min='50', max='200')
+            br
+          #events.well
+          p Developed by 
+            a(href="ekaansharora.github.io") Ekaansh Arora
+    script.
+        let mario='#{mario}';
+    script(src='js/midiplayer.min.js')
+    script(src='js/soundfont-player.min.js')
+    script(src='js/app.js')
