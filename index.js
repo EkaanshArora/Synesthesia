@@ -15,7 +15,7 @@ var upload = multer({ storage: storage });
 const notes = [];
 const fs = require("fs");
 let pattern = "",
-  resizeFactor = 25,
+  resizeFactor = 8,
   color = [[], [], []],
   redSum = 0,
   greenSum = 0,
@@ -25,9 +25,9 @@ let pattern = "",
   redPercent = 0,
   greenPercent = 0,
   bluePercent = 0,
-  chordSelector = 0,
-  chosenChord,
+  scaleSelector = 0,
   chosenScale,
+  chosenPitch,
   progressionNotesMaster = ["i", "ii", "iii", "VI", "v", "VII", "III", "i"],
   progressionNotes,
   calculatedProgression = "",
@@ -45,6 +45,23 @@ app.get("/", function(req, res) {
 });
 
 app.post("/", upload.single("image"), function(req, res) {
+  var calc7 = function(toCalculate){
+    if (toCalculate <= -0.715) {
+      return Calculated = "A";
+    } else if (toCalculate <= -0.43) {
+      return Calculated = "B";
+    } else if (toCalculate <= -0.145) {
+      return Calculated = "C";
+    } else if (toCalculate <= 0.14) {
+      return Calculated = "D";
+    } else if (toCalculate <= 0.425) {
+      return Calculated = "E";
+    } else if (toCalculate <= 0.71) {
+      return Calculated = "F";
+    } else {
+      return Calculated = "G";
+    }
+  };
   uploadedImage = req.file.path;
   Jimp.read(uploadedImage).then(image => {
     image
@@ -69,41 +86,26 @@ app.post("/", upload.single("image"), function(req, res) {
               color[2].push(blue);
             });
             colorSum = redSum + blueSum + greenSum;
-            imageBrightness =
-              colorSum / (resizeFactor * resizeFactor * 256 * 3);
+            imageBrightness = colorSum / (resizeFactor * resizeFactor * 256 * 3);
             redPercent = redSum / (resizeFactor * resizeFactor * 256);
             greenPercent = greenSum / (resizeFactor * resizeFactor * 256);
             bluePercent = blueSum / (resizeFactor * resizeFactor * 256);
-            chordSelector = (bluePercent - redPercent) / 2;
-            chordSelector =
-              chordSelector / (Math.abs(chordSelector) + greenPercent);
-            if (chordSelector <= -0.715) {
-              chosenChord = "A";
-            } else if (chordSelector <= -0.43) {
-              chosenChord = "B";
-            } else if (chordSelector <= -0.145) {
-              chosenChord = "C";
-            } else if (chordSelector <= 0.14) {
-              chosenChord = "D";
-            } else if (chordSelector <= 0.425) {
-              chosenChord = "E";
-            } else if (chordSelector <= 0.71) {
-              chosenChord = "F";
-            } else {
-              chosenChord = "G";
-            }
+            scaleSelector = (bluePercent - redPercent) / 2;
+            scaleSelector = scaleSelector / (Math.abs(scaleSelector) + greenPercent);
+            chosenScale = calc7(scaleSelector);
+            console.log(chosenScale);
             if (imageBrightness < 0.3) {
-              chosenScale = 2;
+              chosenPitch = 2;
             } else if (imageBrightness < 0.5) {
-              chosenScale = 3;
+              chosenPitch = 3;
             } else if (imageBrightness < 0.7) {
-              chosenScale = 4;
+              chosenPitch = 4;
             } else if (imageBrightness < 0.8) {
-              chosenScale = 5;
+              chosenPitch = 5;
             } else {
-              chosenScale = 6;
+              chosenPitch = 6;
             }
-            console.log(chosenChord + chosenScale);
+            console.log(chosenScale + chosenPitch);
             progressionNotes = Array.from(progressionNotesMaster);
             for (var i = progressionNotes.length - 1; i >= 0; i--) {
               calculatedProgression =
@@ -117,8 +119,8 @@ app.post("/", upload.single("image"), function(req, res) {
             calculatedProgression = calculatedProgression.slice(1);
             console.log(calculatedProgression);
             const chords = scribble.progression.getChords(
-              chosenChord + chosenScale + " minor",
-              calculatedProgression
+              chosenScale + chosenPitch + " major",
+              "VII ii III v I vi II VI"//calculatedProgression
             ); //i iii ii v i VI III VII
             chords.split(" ").forEach((c, i) => {
               const chord = scribble.chord(c);
