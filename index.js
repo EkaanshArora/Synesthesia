@@ -265,6 +265,6 @@ app.post("/", upload.single("image"), function (req, res) {
   });
 });
 
-app.listen(3000, function () {
-  console.log("Listening at 3000");
+var listener = app.listen(process.env.PORT || 3000, function() {
+	console.log('Your app is listening on port ' + listener.address().port);
 });
