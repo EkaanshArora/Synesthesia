@@ -24,9 +24,9 @@ html(lang='en')
           p
           p#loading Loading soundfont...
           div(style='border:1px solid #ccc;margin-bottom:12px;background:#f7f7f7;')
-            #play-bar(style='height:40px;background:#33C3F0;width:0%;')
+            #play-bar(style='height:40px;background:#007bff;width:0%;')
           p
-            button#play-button.button.button-primary(onclick='Player.isPlaying() ? pause() : play();', disabled='disabled') Play
+            button#play-button.button.button-primary(style='background-color:#007bff;' onclick='Player.isPlaying() ? pause() : play();', disabled='disabled') Play
             button.button(onclick='stop()') Stop
           hr
           p
@@ -34,7 +34,15 @@ html(lang='en')
             span#tempo-display
             |  bpm
             br
-            input(type='range', onchange='Player.pause();Player.setTempo(this.value);Player.play()', min='50', max='200')
+            .slidecontainer
+              input#myRange.slider(type='range', onchange='Player.pause();Player.setTempo(this.value);Player.play()', min='50', max='200')
+            script.
+              var slider = document.getElementById("myRange");
+              var output = document.getElementById("demo");
+              output.innerHTML = slider.value;
+              slider.oninput = function() {
+              output.innerHTML = this.value;
+              }
             br
           #events.well
           p Developed by 

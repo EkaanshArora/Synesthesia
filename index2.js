@@ -2,20 +2,21 @@ const Jimp = require("jimp");
 const scribble = require("scribbletune");
 const express = require("express");
 const multer = require("multer");
+
 var storage = multer.diskStorage({
-  destination: function(req, file, cb) {
+  destination: function (req, file, cb) {
     cb(null, "uploads");
   },
-  filename: function(req, file, cb) {
+  filename: function (req, file, cb) {
     cb(null, "" + Date.now());
   }
 });
 
 var upload = multer({ storage: storage });
-const notes = [];
 const fs = require("fs");
 let pattern = "",
-  resizeFactor = 8,
+  notes = [],
+  resizeFactor = 12,
   color = [[], [], []],
   phraseChord = [],
   phraseNature = [],
@@ -34,25 +35,48 @@ let pattern = "",
   scaleSelector = 0,
   chosenScale,
   chosenPitch,
-  progressionNotes,
   loopCount = 0,
   songRender = "",
   uploadedImage;
-  //scaleToChord = {A:"I", B:"II", C:"III", D:"IV", E:"V", F:"VI", G:"VII"};
 
 var app = express();
 app.set("views", "./views");
 app.set("view engine", "pug");
 app.use(express.static(__dirname + "/public"));
 
-app.get("/", function(req, res) {
+app.get("/", function (req, res) {
   console.log(Date.now());
   res.render("index");
 });
 
-app.post("/", upload.single("image"), function(req, res) {
+app.post("/", upload.single("image"), function (req, res) {
 
-  var calc7 = function(toCalculate){
+  var cleanUp = function () {
+    phraseChord = [];
+    phraseNature = [];
+    phrasePace = [];
+    pattern = "";
+    chords = "";
+    resizeFactor = 12;
+    color = [[], [], []];
+    tempRedSum = 0;
+    tempGreenSum = 0;
+    tempBlueSum = 0;
+    redSum = 0;
+    greenSum = 0;
+    blueSum = 0;
+    colorSum = 0;
+    imageBrightness = 0;
+    redPercent = 0;
+    greenPercent = 0;
+    bluePercent = 0;
+    scaleSelector = 0;
+    loopCount = 0;
+    songRender = "";
+    notes = [];
+  };
+
+  var calc7 = function (toCalculate) {
     if (toCalculate <= -0.715) {
       return Calculated = "A";
     } else if (toCalculate <= -0.43) {
@@ -70,7 +94,7 @@ app.post("/", upload.single("image"), function(req, res) {
     }
   };
 
-  var convertRed = function(toCalculate){
+  var convertRed = function (toCalculate) {
     if (toCalculate <= 0.142) {
       return Calculated = "I";
     } else if (toCalculate <= 0.284) {
@@ -88,7 +112,7 @@ app.post("/", upload.single("image"), function(req, res) {
     }
   };
 
-  var convertGreen = function(toCalculate){
+  var convertGreen = function (toCalculate) {
     if (toCalculate <= 0.5) {
       return Calculated = 0;
     } else {
@@ -96,7 +120,7 @@ app.post("/", upload.single("image"), function(req, res) {
     }
   };
 
-  var convertBlue = function(toCalculate){
+  var convertBlue = function (toCalculate) {
     if (toCalculate <= 0.35) {
       return Calculated = 0;
     } else if (toCalculate <= 0.7) {
@@ -109,14 +133,15 @@ app.post("/", upload.single("image"), function(req, res) {
   uploadedImage = req.file.path;
 
   Jimp.read(uploadedImage).then(image => {
+    cleanUp();
+    console.log("clean");
     image
       .resize(resizeFactor, resizeFactor)
       .quality(80)
-      .write(uploadedImage+"t", (err, image) => {
-        Jimp.read(uploadedImage+"t")
+      .write(uploadedImage + "t", (err, image) => {
+        Jimp.read(uploadedImage + "t")
           .then(image => {
-            console.log(image.bitmap.width);
-            image.scan(0, 0, image.bitmap.width, image.bitmap.height, function(
+            image.scan(0, 0, image.bitmap.width, image.bitmap.height, function (
               x,
               y,
               idx
@@ -130,12 +155,11 @@ app.post("/", upload.single("image"), function(req, res) {
               color[0].push(red);
               color[1].push(green);
               color[2].push(blue);
-              if(x===image.bitmap.width-1)
-              {
-                for(i=0;i<image.bitmap.width;i++){
-                  tempRedSum = tempRedSum+color[0][image.bitmap.width*loopCount+i];
-                  tempGreenSum = tempGreenSum+color[1][image.bitmap.width*loopCount+i];
-                  tempBlueSum = tempBlueSum+color[2][image.bitmap.width*loopCount+i];
+              if (x === image.bitmap.width - 1) {
+                for (i = 0; i < image.bitmap.width; i++) {
+                  tempRedSum = tempRedSum + color[0][image.bitmap.width * loopCount + i];
+                  tempGreenSum = tempGreenSum + color[1][image.bitmap.width * loopCount + i];
+                  tempBlueSum = tempBlueSum + color[2][image.bitmap.width * loopCount + i];
                 }
                 tempRedSum = tempRedSum / image.bitmap.width;
                 tempRedSum = tempRedSum / 256;
@@ -145,13 +169,8 @@ app.post("/", upload.single("image"), function(req, res) {
                 tempBlueSum = tempBlueSum / 256;
 
                 phraseChord.push(convertRed(tempRedSum));
-                //console.log("pc "+phraseChord)
-                
                 phraseNature.push(convertGreen(tempGreenSum));
-                //console.log(phraseNature+" pnat "+tempGreenSum);
-
                 phrasePace.push(convertBlue(tempBlueSum));
-                //console.log(phrasePace+" pace "+tempBlueSum);
 
                 tempRedSum = 0;
                 tempGreenSum = 0;
@@ -159,8 +178,8 @@ app.post("/", upload.single("image"), function(req, res) {
                 loopCount++;
               }
             });
-            
-            for(var i = 0; i < phraseChord.length; i++){
+
+            for (var i = 0; i < phraseChord.length; i++) {
               if (phraseNature[i] === 1) {
                 phraseChord[i] = phraseChord[i].toLowerCase();
               }
@@ -188,7 +207,7 @@ app.post("/", upload.single("image"), function(req, res) {
             }
 
             console.log(chosenScale + chosenPitch);
-            const chords = scribble.progression.getChords(
+            let chords = scribble.progression.getChords(
               chosenScale + chosenPitch + " major",
               phraseChord.join(" ")
             ); //i iii ii v i VI III VII
@@ -212,31 +231,31 @@ app.post("/", upload.single("image"), function(req, res) {
                 notes.push(chord[1]);
                 notes.push(chord[2]);
                 notes.push(chord[0]);
-                pattern = pattern + "[xxxx]";
+                pattern = pattern + "[xx][xx]";
               }
             });
-            console.log(pattern + " 00 " + phraseChord.join(" "));
-            const clip1 = scribble.clip({
+            console.log(pattern + "  " + phraseChord.join(" "));
+            let clip1 = scribble.clip({
               notes,
               pattern: pattern
             });
-            scribble.midi(clip1, "clip.mid", function() {
+            scribble.midi(clip1, uploadedImage+".mid", function () {
               songRender =
                 "data:audio/midi;base64," +
-                Buffer(fs.readFileSync("clip.mid")).toString("base64");
+                Buffer(fs.readFileSync(uploadedImage+".mid")).toString("base64");
               res.render("play", { mario: songRender });
               fs.unlink(uploadedImage, (err) => {
                 if (err) throw err;
                 console.log('1 was deleted');
               });
-              fs.unlink(uploadedImage+"t", (err) => {
+              fs.unlink(uploadedImage + "t", (err) => {
                 if (err) throw err;
                 console.log('2 was deleted');
               });
-              phraseChord = [];
-              phraseNature = [];
-              phrasePace = [];
-              pattern = [];
+              // fs.unlink("clip.mid", (err) => {
+              //   if (err) throw err;
+              //   console.log('clip was deleted');
+              // });
             });
           })
           .catch(err => {
@@ -246,6 +265,6 @@ app.post("/", upload.single("image"), function(req, res) {
   });
 });
 
-app.listen(3000, function() {
+app.listen(3000, function () {
   console.log("Listening at 3000");
 });

@@ -1,5 +1,6 @@
 sb = document.getElementById('subbut');
 formcorrect = false;
+sb.disabled = true;
 function showFileSize() {
     var input, file;
     input = document.getElementById('fileinput');
@@ -35,6 +36,11 @@ function bodyAppend(tagName, innerHTML) {
 }
 document.getElementById('fileinput').onchange = function () {
     showFileSize();
+    if(formcorrect){
+        sb.disabled = false;
+    } else{
+        sb.disabled = true;
+    }
 };
 function validate_fileupload(fileName) {
     var allowed_extensions = new Array("jpg", "png", "jpeg");
@@ -45,12 +51,5 @@ function validate_fileupload(fileName) {
             return true; // valid file extension
         }
     }
-
     return false;
 }
-
-document.getElementById('subbut').onclick = function () {
-    if (formcorrect) {
-        //getElementById('subbut2').click();
-    }
-};
