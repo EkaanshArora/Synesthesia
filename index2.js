@@ -21,6 +21,8 @@ let pattern = "",
   phraseNature = [],
   phrasePace = [],
   tempRedSum = 0,
+  tempGreenSum = 0,
+  tempBlueSum = 0,
   redSum = 0,
   greenSum = 0,
   blueSum = 0,
@@ -32,12 +34,11 @@ let pattern = "",
   scaleSelector = 0,
   chosenScale,
   chosenPitch,
-  //progressionNotesMaster = ["i", "ii", "iii", "VI", "v", "VII", "III", "i"],
   progressionNotes,
-  calculatedProgression = "",
+  loopCount = 0,
   songRender = "",
-  uploadedImage,
-  scaleToChord = {A:"I", B:"II", C:"III", D:"IV", E:"V", F:"VI", G:"VII"};
+  uploadedImage;
+  //scaleToChord = {A:"I", B:"II", C:"III", D:"IV", E:"V", F:"VI", G:"VII"};
 
 var app = express();
 app.set("views", "./views");
@@ -50,6 +51,7 @@ app.get("/", function(req, res) {
 });
 
 app.post("/", upload.single("image"), function(req, res) {
+
   var calc7 = function(toCalculate){
     if (toCalculate <= -0.715) {
       return Calculated = "A";
@@ -67,11 +69,49 @@ app.post("/", upload.single("image"), function(req, res) {
       return Calculated = "G";
     }
   };
+
+  var convertRed = function(toCalculate){
+    if (toCalculate <= 0.142) {
+      return Calculated = "I";
+    } else if (toCalculate <= 0.284) {
+      return Calculated = "II";
+    } else if (toCalculate <= 0.426) {
+      return Calculated = "III";
+    } else if (toCalculate <= 0.568) {
+      return Calculated = "IV";
+    } else if (toCalculate <= 0.710) {
+      return Calculated = "V";
+    } else if (toCalculate <= 0.852) {
+      return Calculated = "VI";
+    } else {
+      return Calculated = "VII";
+    }
+  };
+
+  var convertGreen = function(toCalculate){
+    if (toCalculate <= 0.5) {
+      return Calculated = 0;
+    } else {
+      return Calculated = 1;
+    }
+  };
+
+  var convertBlue = function(toCalculate){
+    if (toCalculate <= 0.35) {
+      return Calculated = 0;
+    } else if (toCalculate <= 0.7) {
+      return Calculated = 1;
+    } else {
+      return Calculated = 2;
+    }
+  };
+
   uploadedImage = req.file.path;
+
   Jimp.read(uploadedImage).then(image => {
     image
-      .resize(resizeFactor, resizeFactor) // resize
-      .quality(80) // set JPEG quality
+      .resize(resizeFactor, resizeFactor)
+      .quality(80)
       .write(uploadedImage+"t", (err, image) => {
         Jimp.read(uploadedImage+"t")
           .then(image => {
@@ -93,10 +133,39 @@ app.post("/", upload.single("image"), function(req, res) {
               if(x===image.bitmap.width-1)
               {
                 for(i=0;i<image.bitmap.width;i++){
-                  tempRedSum=tempRedSum+color[0][i];
+                  tempRedSum = tempRedSum+color[0][image.bitmap.width*loopCount+i];
+                  tempGreenSum = tempGreenSum+color[1][image.bitmap.width*loopCount+i];
+                  tempBlueSum = tempBlueSum+color[2][image.bitmap.width*loopCount+i];
                 }
+                tempRedSum = tempRedSum / image.bitmap.width;
+                tempRedSum = tempRedSum / 256;
+                tempGreenSum = tempGreenSum / image.bitmap.width;
+                tempGreenSum = tempGreenSum / 256;
+                tempBlueSum = tempBlueSum / image.bitmap.width;
+                tempBlueSum = tempBlueSum / 256;
+
+                phraseChord.push(convertRed(tempRedSum));
+                //console.log("pc "+phraseChord)
+                
+                phraseNature.push(convertGreen(tempGreenSum));
+                //console.log(phraseNature+" pnat "+tempGreenSum);
+
+                phrasePace.push(convertBlue(tempBlueSum));
+                //console.log(phrasePace+" pace "+tempBlueSum);
+
+                tempRedSum = 0;
+                tempGreenSum = 0;
+                tempBlueSum = 0;
+                loopCount++;
               }
             });
+            
+            for(var i = 0; i < phraseChord.length; i++){
+              if (phraseNature[i] === 1) {
+                phraseChord[i] = phraseChord[i].toLowerCase();
+              }
+            };
+
             colorSum = redSum + blueSum + greenSum;
             imageBrightness = colorSum / (resizeFactor * resizeFactor * 256 * 3);
             redPercent = redSum / (resizeFactor * resizeFactor * 256);
@@ -105,7 +174,7 @@ app.post("/", upload.single("image"), function(req, res) {
             scaleSelector = (bluePercent - redPercent) / 2;
             scaleSelector = scaleSelector / (Math.abs(scaleSelector) + greenPercent);
             chosenScale = calc7(scaleSelector);
-            console.log(chosenScale);
+
             if (imageBrightness < 0.3) {
               chosenPitch = 2;
             } else if (imageBrightness < 0.5) {
@@ -117,38 +186,36 @@ app.post("/", upload.single("image"), function(req, res) {
             } else {
               chosenPitch = 6;
             }
+
             console.log(chosenScale + chosenPitch);
-            // progressionNotes = Array.from(progressionNotesMaster);
-            // for (var i = progressionNotes.length - 1; i >= 0; i--) {
-            //   calculatedProgression =
-            //     calculatedProgression +
-            //     " " +
-            //     progressionNotes.splice(
-            //       Math.floor(Math.random() * progressionNotes.length),
-            //       1
-            //     );
-            // }
-            // calculatedProgression = calculatedProgression.slice(1);
-            console.log(calculatedProgression);
             const chords = scribble.progression.getChords(
               chosenScale + chosenPitch + " major",
-              "i iii ii v i VI III VII"//calculatedProgression
+              phraseChord.join(" ")
             ); //i iii ii v i VI III VII
+
             chords.split(" ").forEach((c, i) => {
               const chord = scribble.chord(c);
-              if (i % 2 !== 0) {
+              if (phrasePace[i] === 0) {
                 // use 2 quarter notes
                 notes.push(chord[0]);
                 notes.push(chord[1]);
                 pattern = pattern + "xx";
-              } else {
+              } else if (phrasePace[i] === 1) {
                 // use a quarter note and 2 eigth notes
                 notes.push(chord[0]);
                 notes.push(chord[1]);
                 notes.push(chord[2]);
                 pattern = pattern + "x[xx]";
+              } else {
+                // use 2 eigth?
+                notes.push(chord[0]);
+                notes.push(chord[1]);
+                notes.push(chord[2]);
+                notes.push(chord[0]);
+                pattern = pattern + "[xxxx]";
               }
             });
+            console.log(pattern + " 00 " + phraseChord.join(" "));
             const clip1 = scribble.clip({
               notes,
               pattern: pattern
@@ -158,7 +225,6 @@ app.post("/", upload.single("image"), function(req, res) {
                 "data:audio/midi;base64," +
                 Buffer(fs.readFileSync("clip.mid")).toString("base64");
               res.render("play", { mario: songRender });
-              calculatedProgression = "";
               fs.unlink(uploadedImage, (err) => {
                 if (err) throw err;
                 console.log('1 was deleted');
@@ -167,6 +233,10 @@ app.post("/", upload.single("image"), function(req, res) {
                 if (err) throw err;
                 console.log('2 was deleted');
               });
+              phraseChord = [];
+              phraseNature = [];
+              phrasePace = [];
+              pattern = [];
             });
           })
           .catch(err => {
