@@ -238,12 +238,12 @@ app.post("/", upload.single("image"), function (req, res) {
               notes,
               pattern: pattern
             });
-            
-            scribble.midi(clip1, uploadedImage+".mid", function () {
-              
+
+            scribble.midi(clip1, uploadedImage + ".mid", function () {
+
               songRender =
                 "data:audio/midi;base64," +
-                Buffer(fs.readFileSync(uploadedImage+".mid")).toString("base64");
+                Buffer(fs.readFileSync(uploadedImage + ".mid")).toString("base64");
               res.render("play", { mario: songRender });
 
               fs.unlink(uploadedImage, (err) => {
@@ -269,6 +269,6 @@ app.post("/", upload.single("image"), function (req, res) {
   });
 });
 
-app.listen(3001, function () {
-  console.log("Listening at 3000");
+var listener = app.listen(process.env.PORT || 3000, function () {
+  console.log('Your app is listening on port ' + listener.address().port);
 });
