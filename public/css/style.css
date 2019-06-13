@@ -2,25 +2,32 @@ html {
     padding: 30px;
     background-color: #fafafa;
 }
+
 body {
     background-color: #fafafa !important;
 }
+
 .item {
     display: inline;
     padding: 10px;
 }
+
 .center {
     text-align: center;
 }
+
 .mauto {
     margin: auto;
 }
+
 .pad25 {
     padding: 0 10px;
 }
+
 .form-responses {
     width: 80vw;
 }
+
 .test-radio {
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -38,6 +45,7 @@ body {
     margin-right: 7px;
     outline: none;
 }
+
 .test-radio:checked::before {
     position: absolute;
     font: 13px/1 'Open Sans', sans-serif;
@@ -46,52 +54,63 @@ body {
     content: '\02143';
     transform: rotate(40deg);
 }
+
 .test-radio:hover {
     background-color: #dadada;
 }
+
 .test-radio:checked {
     background-color: #cdcdcd;
 }
+
 label {
     font: 400 16px/1.7 'Open Sans', sans-serif;
 }
+
 .footer {
     position: relative;
-    margin: 5vh 0 0 0; 
+    margin: 5vh 0 0 0;
 }
+
 .formtextgrey {
     font: 300 16px/1.7 'Open Sans', sans-serif;
     color: #666;
 }
+
 .formtextred {
     font: 300 16px/1.7 'Open Sans', sans-serif;
     color: rgb(201, 0, 20);
 }
-#subbut{
+
+#subbut {
     margin: 3vh auto;
     width: 20vw;
     display: block;
 }
-.hidden{
+
+.hidden {
     visibility: hidden;
 }
-#fileinput{
+
+#fileinput {
     margin: 0 auto !important;
     width: auto;
     background-color: #ddd
 }
-#tagline{
+
+#tagline {
     margin: 2vh 0 4vh 0;
 }
-a{
-    color:#007bff !important;
+
+a {
+    color: #007bff !important;
 }
 
 .slidecontainer {
     width: 50%;
-  }
-  
-  .slider {
+}
+
+.slider {
     -webkit-appearance: none;
     width: 100%;
     height: 15px;
@@ -101,13 +120,13 @@ a{
     opacity: 0.9;
     -webkit-transition: .2s;
     transition: opacity .2s;
-  }
-  
-  .slider:hover {
+}
+
+.slider:hover {
     opacity: 1;
-  }
-  
-  .slider::-webkit-slider-thumb {
+}
+
+.slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
     width: 25px;
@@ -115,12 +134,12 @@ a{
     border-radius: 50%;
     background: #007bff;
     cursor: pointer;
-  }
-  
-  .slider::-moz-range-thumb {
+}
+
+.slider::-moz-range-thumb {
     width: 25px;
     height: 25px;
     border-radius: 50%;
     background: #007bff;
     cursor: pointer;
-  }
+}

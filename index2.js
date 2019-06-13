@@ -156,6 +156,7 @@ app.post("/", upload.single("image"), function (req, res) {
               color[1].push(green);
               color[2].push(blue);
               if (x === image.bitmap.width - 1) {
+
                 for (i = 0; i < image.bitmap.width; i++) {
                   tempRedSum = tempRedSum + color[0][image.bitmap.width * loopCount + i];
                   tempGreenSum = tempGreenSum + color[1][image.bitmap.width * loopCount + i];
@@ -210,23 +211,20 @@ app.post("/", upload.single("image"), function (req, res) {
             let chords = scribble.progression.getChords(
               chosenScale + chosenPitch + " major",
               phraseChord.join(" ")
-            ); //i iii ii v i VI III VII
+            );
 
             chords.split(" ").forEach((c, i) => {
               const chord = scribble.chord(c);
               if (phrasePace[i] === 0) {
-                // use 2 quarter notes
                 notes.push(chord[0]);
                 notes.push(chord[1]);
                 pattern = pattern + "xx";
               } else if (phrasePace[i] === 1) {
-                // use a quarter note and 2 eigth notes
                 notes.push(chord[0]);
                 notes.push(chord[1]);
                 notes.push(chord[2]);
                 pattern = pattern + "x[xx]";
               } else {
-                // use 2 eigth?
                 notes.push(chord[0]);
                 notes.push(chord[1]);
                 notes.push(chord[2]);
@@ -234,24 +232,30 @@ app.post("/", upload.single("image"), function (req, res) {
                 pattern = pattern + "[xx][xx]";
               }
             });
+
             console.log(pattern + "  " + phraseChord.join(" "));
             let clip1 = scribble.clip({
               notes,
               pattern: pattern
             });
+            
             scribble.midi(clip1, uploadedImage+".mid", function () {
+              
               songRender =
                 "data:audio/midi;base64," +
                 Buffer(fs.readFileSync(uploadedImage+".mid")).toString("base64");
               res.render("play", { mario: songRender });
+
               fs.unlink(uploadedImage, (err) => {
                 if (err) throw err;
                 console.log('1 was deleted');
               });
+
               fs.unlink(uploadedImage + "t", (err) => {
                 if (err) throw err;
                 console.log('2 was deleted');
               });
+
               // fs.unlink("clip.mid", (err) => {
               //   if (err) throw err;
               //   console.log('clip was deleted');

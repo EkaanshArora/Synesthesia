@@ -1,9 +1,9 @@
 sb = document.getElementById('subbut');
 formcorrect = false;
-sb.disabled = true;
+
 function showFileSize() {
     var input, file;
-    input = document.getElementById('fileinput');
+    input = document.getElementById('file-1');
     if (!input.files[0]) {
         bodyAppend("p", "Please select a file");
         formcorrect = false;
@@ -30,11 +30,13 @@ function showFileSize() {
         }
     }
 }
+
 function bodyAppend(tagName, innerHTML) {
     var elm = document.getElementById("fileval");
     elm.innerHTML = innerHTML;
 }
-document.getElementById('fileinput').onchange = function () {
+
+document.getElementById('file-1').onchange = function () {
     showFileSize();
     if(formcorrect){
         sb.disabled = false;
@@ -42,14 +44,22 @@ document.getElementById('fileinput').onchange = function () {
         sb.disabled = true;
     }
 };
+
 function validate_fileupload(fileName) {
     var allowed_extensions = new Array("jpg", "png", "jpeg");
-    var file_extension = fileName.split('.').pop().toLowerCase(); // split function will split the filename by dot(.), and pop function will pop the last element from the array which will give you the extension as well. If there will be no extension then it will return the filename.
+    var file_extension = fileName.split('.').pop().toLowerCase();
 
     for (var i = 0; i <= allowed_extensions.length; i++) {
         if (allowed_extensions[i] == file_extension) {
-            return true; // valid file extension
+            return true; 
         }
     }
     return false;
+}
+
+showFileSize();
+if(formcorrect){
+    sb.disabled = false;
+} else{
+    sb.disabled = true;
 }
