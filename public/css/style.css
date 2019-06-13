@@ -86,6 +86,8 @@ label {
     margin: 3vh auto;
     width: 20vw;
     display: block;
+    font-size: 12px;
+    font-weight: 500;
 }
 
 .hidden {

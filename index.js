@@ -246,21 +246,23 @@ app.post("/", upload.single("image"), function (req, res) {
                 Buffer(fs.readFileSync(uploadedImage + ".mid")).toString("base64");
               res.render("play", { mario: songRender });
 
-              fs.unlink(uploadedImage, (err) => {
-                if (err) throw err;
-                console.log('1 was deleted');
-              });
+              // fs.unlink(uploadedImage, (err) => {
+              //   if (err) throw err;
+              //   console.log('1 was deleted');
+              // });
 
               fs.unlink(uploadedImage + "t", (err) => {
                 if (err) throw err;
                 console.log('2 was deleted');
               });
 
-              // fs.unlink("clip.mid", (err) => {
-              //   if (err) throw err;
-              //   console.log('clip was deleted');
-              // });
+              fs.unlink(uploadedImage + ".mid", (err) => {
+                if (err) throw err;
+                console.log('clip was deleted');
+              });
+              
             });
+
           })
           .catch(err => {
             console.error(err);
