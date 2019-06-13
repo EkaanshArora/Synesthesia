@@ -28,6 +28,11 @@ body {
     width: 80vw;
 }
 
+#info{
+    width: 80vw;
+    margin: auto;
+}
+
 .test-radio {
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -83,7 +88,7 @@ label {
 }
 
 #subbut {
-    margin: 3vh auto;
+    margin: 1vw auto 0 auto;
     width: 20vw;
     display: block;
     font-size: 12px;

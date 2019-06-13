@@ -5,6 +5,7 @@ html
         link(rel='stylesheet', href='css/skeleton.css')
         link(rel="stylesheet" href="./css/style.css" type="text/css")
         link(rel="stylesheet" href="./css/alt.css" type="text/css")
+        meta(name='viewport', content='width=device-width, initial-scale=1.0')
         script.
             (function (e, t, n) {
             var r = e.querySelectorAll("html")[0];
@@ -15,6 +16,7 @@ html
     body
         h1.center Synesthesia
         h5.center#tagline Listen to what any image would sound like
+        p.center#info Analyses image properties and it's pixel sequence values and correlates it to properties of music determining the scale, pitch, progression and pace of the music. All generated music is entirely generated from the image, has no random elements, and the results remain consistent.
         form.center(action="/" enctype="multipart/form-data" method="POST")
             .content
                 .box

@@ -36,10 +36,8 @@ var buildTracksHtml = function () {
 	});
 }
 
-Soundfont.instrument(ac, 'https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/gh-pages/MusyngKite/acoustic_guitar_nylon-mp3.js').then(function (instrument) {
+Soundfont.instrument(ac, 'https://raw.githubusercontent.com/gleitz/midi-js-soundfonts/gh-pages/MusyngKite/electric_guitar_clean-mp3.js').then(function (instrument) {
 	document.getElementById('loading').style.display = 'none';
-	//document.getElementById('select-file').style.display = 'block';
-
 	loadFile = function () {
 		var file = document.querySelector('input[type=file]').files[0];
 		var reader = new FileReader();
