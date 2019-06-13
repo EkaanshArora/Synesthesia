@@ -4,14 +4,24 @@ html
         link(rel='stylesheet', href='css/normalize.css')
         link(rel='stylesheet', href='css/skeleton.css')
         link(rel="stylesheet" href="./css/style.css" type="text/css")
+        link(rel="stylesheet" href="./css/alt.css" type="text/css")
+        script.
+            (function (e, t, n) {
+            var r = e.querySelectorAll("html")[0];
+            r.className = r.className.replace(/(^|\\s)no-js(\s|$)/, "$1js$2")
+            })
+            (document, window, 0);
+
     body
         h1.center Synesthesia
-        h5.center#tagline Generate a music sample from any image
+        h5.center#tagline Listen to what any image would sound like
         form.center(action="/" enctype="multipart/form-data" method="POST")
-            .form-group
-                label(for='image') Pick an image
-                input.form-control-file#fileinput(type="file" name="image" placeholder="Pick" required)
-                br
-                p#fileval.formtextred Please select a file
+            .content
+                .box
+                    input#file-1.inputfile.inputfile-1(type='file', name='image')
+                    label(for='file-1')
+                        span Choose an image..
+                    p#fileval.formtextred Please select a file
             button.btn.btn-primary#subbut(type='submit' title="Submit") Submit
         script(src="./js/script.js")
+        script(src='./js/file.js')
